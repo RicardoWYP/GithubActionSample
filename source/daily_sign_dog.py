@@ -1,23 +1,30 @@
+import json
 import os
 import requests
 
 cookie = os.environ.get("DOG_COOKIE")
+# account = os.environ.get("DOG_ACCOUNT")
+# password = os.environ.get("DOG_PASSWORD")
+account = "wDog233"
+password = "112233"
 
-url = ("https://api.m.jd.com/client.action?functionId=signBeanAct&body=%7B%22fp%22%3A%22-1%22%2C%22shshshfp%22%3A%22-1"
-       "%22%2C%22shshshfpa%22%3A%22-1%22%2C%22referUrl%22%3A%22-1%22%2C%22userAgent%22%3A%22-1%22%2C%22jda%22%3A%22-1"
-       "%22%2C%22rnVersion%22%3A%223.9%22%7D&appid=ld&client=apple&clientVersion=10.0.4&networkType=wifi&osVersion=14"
-       ".8.1&uuid=3acd1f6361f86fc0a1bc23971b2e7bbe6197afb6&openudid=3acd1f6361f86fc0a1bc23971b2e7bbe6197afb6&jsonp"
-       "=jsonp_1645885800574_58482")
+# 登录URL
+loginUrl = "https://sssvv8.com/api/v5/account/login"
+# 签到URL
+checkinUrl = "https://sssvv8.com/api/v5/account/checkin"
+# 签到状态URL
+statusUrl = "https://sssvv8.com/api/v5/account/info"
+# token
+userAgent = "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/104.0.0.0 Safari/537.36";
+# 账号密码
+params = {"account": account, "password": password}
 
-headers = {"Connection": 'keep-alive',
-           "Content-Type": "application/x-www-form-urlencoded; charset=UTF-8",
-           "Cache-Control": 'no-cache',
-           "User-Agent": "okhttp/3.12.1;jdmall;android;version/10.3.4;build/92451;",
-           "accept": "*/*",
-           "connection": "Keep-Alive",
-           "Accept-Encoding": "gzip,deflate",
-           "Cookie": cookie
-           }
+headers = {"Content-Type": "application/json;charset=UTF-8",
+           "User-Agent": userAgent}
 
-response = requests.post(url=url, headers=headers)
-print(response.text)
+response = requests.post(url=loginUrl, headers=headers, data=json.dumps(params))
+res = json.loads(response.text)
+print(res)
+if res["code"] == 0:
+    # 登陆成功
+    print(response.headers.get("set-cookie"))
