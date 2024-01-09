@@ -1,4 +1,5 @@
 import json
+import os
 import requests
 from requests.exceptions import HTTPError
 
@@ -26,7 +27,7 @@ class GlaDosJob:
             "authorization": authorization
         }
 
-        before_days = self.get_left_day_by_status(user)
+        before_days = self.get_left_day_by_status(headers, user)
 
         data = {'token': token}
         try:
@@ -38,7 +39,7 @@ class GlaDosJob:
             code = result.get('code')
 
             if code == 0:
-                after_days = self.get_left_day_by_status(user)
+                after_days = self.get_left_day_by_status(headers, user)
                 points = result.get('points')
                 print(f'{user}签到成功！之前{before_days}天，之后{after_days}天，今天获取点数：{points}')
             elif code == 1:
@@ -48,12 +49,7 @@ class GlaDosJob:
         except HTTPError as http_err:
             print(f'HTTP error occurred: {http_err}')
 
-    def get_left_day_by_status(self, user):
-        headers = {
-            "user-agent": self.user_agent,
-            "cookie": self.cookie,
-            "authorization": self.authorization
-        }
+    def get_left_day_by_status(self, headers, user):
         try:
             status_resp = requests.get(self.status_url, headers=headers)
             status_resp.raise_for_status()
@@ -74,6 +70,6 @@ class GlaDosJob:
 # 使用示例
 if __name__ == '__main__':
     gla_dos_job = GlaDosJob()
-    # 假设这里有一个从哪里来的sign_user_info字符串
-    sign_user_info = '{"user1":{"authorization":"Bearer xxx","cookie":"_ga=xxx; _gid=xxx; _gat=1","token":"xxx"}}'
+    # 从环境变量中获取sign_user_info字符串信息
+    sign_user_info = os.environ.get("SIGN_USER_INFO", '{"wyp":{"authorization":"62098593932955977062289105384249-1080-2560","cookie":"koa:sess=eyJ1c2VySWQiOjE2NTI5OCwiX2V4cGlyZSI6MTcwNjA2MzI0MDQ0OCwiX21heEFnZSI6MjU5MjAwMDAwMDB9; koa:sess.sig=ESljsQz0x6sv8aO8Kaal4ADyqxY; _ga=GA1.2.1195581822.1653983624; _gid=GA1.2.679587050.1690611274; _gat_gtag_UA_104464600_2=1; _ga_CZFVKMNT9J=GS1.1.1690611273.19.1.1690611283.0.0.0","token":"glados.one"}}')
     gla_dos_job.sign_in_job_handler(sign_user_info)
